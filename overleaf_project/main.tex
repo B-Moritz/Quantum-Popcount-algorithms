@@ -645,7 +645,12 @@ We can illustrate this by looking at the first four integers. The first integer 
 
 Since the number of activated Tofflo gates in the Exhaustive Toffoli circuit, we can express the effect of the circuit \(ET_n\) for any \(n \ge 2\) like this:
 
-\[\ket{z_n, y_2} = \ket{z_n} \otimes X^{\binom{\omega(z_n)}{2} \; mod \; 2}\ket{0}\]
+\[\ket{z_n, y_2} \xrightarrow{ET} 
+    \begin{cases}
+    \ket{z_n, 0} & 2 > \omega(z_n) \ge 0 \\
+    \ket{z_n} \otimes X^{\binom{\omega(z_n)}{2}}\ket{0} & \omega(z_n) \ge 2
+    \end{cases}
+\]
 
 \subsubsection{Finding \(y_2\)  with the Quantum Fourier Transform}
 From the previous section we know that using the ET circuit does generalize to all \(n \ge 2\) for the \(j=2\) problem configuration. Another approach to solve the popcount problem on a Quantum Computer can be found in \cite{mit_problem_set_2010}. In this case they used the Quantum Fourier Transform (QFT) to solve the problem for any \(n \in \mathbb{N}\) for all \(y_j\). This is thus an interesting starting point to create a general solution for the problem configuration \(n \ge 2\) with \(j = 2\). Table 4 shows the general circuit with:
@@ -819,7 +824,7 @@ CR_z(\varphi)' = \left(I_2 \otimes R_z\left(\frac{\varphi}{2}\right)\right) \cdo
         0 & 0 & 0 & e^{\frac{\varphi}{2} i}
     \end{bmatrix}
 \]
-From the matrices, we can see that the operations only affect the target qubit with the \(2x2\) matrix in the lower right corner. The difference is that \(CR_z(\varphi)'\), in addition to state \(\ket{11}\) also has an effect on the \(\ket{10}\) state. The lower right \(2x2\) matrices for \(CR_z(\varphi)\) and \(CR_z(\varphi)'\), are representations of the \(R_z(\varphi)\) single qubit gate with a difference of a complex factor \(e^{\frac{\varphi}{2}i}\) \cite[p. 261]{sutor_dancing_2019}:
+From the matrices, we can see that the operations only affect the target qubit with the \(2\times2\) matrix in the lower right corner. The difference is that \(CR_z(\varphi)'\), in addition to state \(\ket{11}\) also has an effect on the \(\ket{10}\) state. The lower right \(2\times2\) matrices for \(CR_z(\varphi)\) and \(CR_z(\varphi)'\), are representations of the \(R_z(\varphi)\) single qubit gate with a difference of a complex factor \(e^{\frac{\varphi}{2}i}\) \cite[p. 261]{sutor_dancing_2019}:
 \[
 \begin{bmatrix}
 1 & 0 \\
@@ -932,7 +937,7 @@ The target qubit starts in the \(\ket{0}\) state and is transformed into the \(\
 \]
 With that we can find:
 \[
-    (S')^{\omega(z)-y_1}\ket{+} = \frac{\left((S')^{\omega(z)-y_1}\ket{0} + (S')^{\omega(z)-y_1}\ket{0}\right)}{\sqrt{2}} 
+    (S')^{\omega(z)-y_1}\ket{+} = \frac{\left((S')^{\omega(z)-y_1}\ket{1} + (S')^{\omega(z)-y_1}\ket{0}\right)}{\sqrt{2}} 
     \]
     
 \[
@@ -981,7 +986,7 @@ The probabilities can now be simplified
 \[
     p_\ket{1}= \left|\frac{-2bi}{2}\right|^2 =|b|^2= \left|sin\left(\frac{\pi}{4}\cdot(\omega(z) - y_1)\right)\right|^2
 \]
-We see that the measured result depends on the periodic trigonometric functions. Because they are periodic, we priomarily need to concider the the cases where the angle is between 0 and \(2\pi\). 
+We see that the measured result depends on the periodic trigonometric functions. Because they are periodic, we primarily need to concider the the cases where the angle is between 0 and \(2\pi\). 
 \[
     \frac{\pi}{4} \cdot x = 2\pi \Leftrightarrow x = \frac{2\pi \cdot 4}{\pi} = 8
 \]
@@ -1036,7 +1041,7 @@ Total number of gates:
     N_{total} = \binom{n}{2}\cdot 15 = \frac{15n(n-1)}{2} = \frac{15}{2}(n^2 - n) = O(n^2)
 \]
 
-For the QFT solution tot he \(j=2\) popcount problem, we can count the number of CRZ gates as n (each input corresponds to one CRZ gate). Further more there are two Hadamard gates and one CRZ gate in the \(QFT\) and \(QFT^-1\). The CRZ gate can be decomposed into two RZ gates and two CNOT gates.
+For the QFT solution tot he \(j=2\) popcount problem, we can count the number of CRZ gates as n (each input corresponds to one CRZ gate). furthermore there are two Hadamard gates and one CRZ gate in the \(QFT\) and \(QFT^-1\). The CRZ gate can be decomposed into two RZ gates and two CNOT gates.
 
 Number of CNOT gates:
 \[
@@ -1044,7 +1049,7 @@ N_{CNOT} = 2 + n\cdot2 = O(n)
 \]
 Total number of gates:
 \[
-N_{total} = 6 + 4n = O(n)
+N_{total} = 6 + 4n + n - 1 = O(n)
 \]
 
 From this we see that the QFT solution is significantly less costly as it is done with a linear amount of gates compared to the Toffoli approach where the number of gates grows quadratically. 
@@ -1095,10 +1100,10 @@ With this we have shown that using the five qubit gate (see Figure \ref{fig:quad
 \]
 Where \(z_k\) is the \(k\)-th input qubit. For the case where \(m=4)\) we get the following equation:
 \[
-z_0 + z_1 + z_2 + z_4 - (z_0 \otimes z_1) - (z_0 \otimes z_2) - (z_0 \otimes z_3) - (z_1 \otimes z_2) - (z_1 \otimes z_3) - (z_2 \otimes z_3) 
+z_0 + z_1 + z_2 + z_4 - (z_0 \oplus z_1) - (z_0 \oplus z_2) - (z_0 \oplus z_3) - (z_1 \oplus z_2) - (z_1 \oplus z_3) - (z_2 \oplus z_3) 
 \] 
 \[
-+ (z_0 \otimes z_1 \otimes z_2) + (z_0 \otimes z_1 \otimes z_3) + (z_1 \otimes z_2 \otimes z_3) - (z_0 \otimes z_1 \otimes z_2 \otimes z_3) 
++ (z_0 \oplus z_1 \oplus z_2) + (z_0 \oplus z_1 \oplus z_3) + (z_1 \oplus z_2 \oplus z_3) - (z_0 \oplus z_1 \oplus z_2 \oplus z_3) 
 \] 
 \[ 
 = 2^{3}(z_0 \; \land \; z_1 \; \land \; z_2 \; \land \; z_3)
@@ -1119,31 +1124,31 @@ The complete circuit can now be implemented by adding the V gate each time a pos
  \hline
  1000 & \(z_0\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
- 1100 & \(x_0 \otimes z_1\) & \(R_z(-\frac{\pi}{8})\) \\
+ 1100 & \(x_0 \oplus z_1\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline
  0100 & \(z_1\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
- 0110 & \(z_1 \otimes z_2\) & \(R_z(-\frac{\pi}{8})\) \\
+ 0110 & \(z_1 \oplus z_2\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline
- 1110 & \(z_0 \otimes z_1 \otimes z_2\) & \(R_z(\frac{\pi}{8})\) \\
+ 1110 & \(z_0 \oplus z_1 \oplus z_2\) & \(R_z(\frac{\pi}{8})\) \\
  \hline 
- 1010 & \(z_0 \otimes z_2\) & \(R_z(-\frac{\pi}{8})\) \\
+ 1010 & \(z_0 \oplus z_2\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline 
  0010 & \(z_2\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
- 0011 & \(z_2 \otimes z_3\) & \(R_z(-\frac{\pi}{8})\) \\
+ 0011 & \(z_2 \oplus z_3\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline
- 1011 & \(z_0 \otimes z_2 \otimes z_3\) & \(R_z(\frac{\pi}{8})\) \\
+ 1011 & \(z_0 \oplus z_2 \oplus z_3\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
- 1111 & \(z_0 \otimes z_1 \otimes z_2 \otimes z_3\) & \(R_z(-\frac{\pi}{8})\) \\
+ 1111 & \(z_0 \oplus z_1 \oplus z_2 \otimes z_3\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline
- 0111 & \(z_1 \otimes z_2 \otimes z_3\) & \(R_z(\frac{\pi}{8})\) \\
+ 0111 & \(z_1 \oplus z_2 \oplus z_3\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
- 0101 & \(z_1 \otimes z_3\) & \(R_z(-\frac{\pi}{8})\) \\
+ 0101 & \(z_1 \oplus z_3\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline
- 1101 & \(z_0 \otimes z_1 \otimes z_3\) & \(R_z(\frac{\pi}{8})\) \\
+ 1101 & \(z_0 \oplus z_1 \oplus z_3\) & \(R_z(\frac{\pi}{8})\) \\
  \hline 
- 1001 & \(z_0 \otimes z_3\) & \(R_z(-\frac{\pi}{8})\) \\
+ 1001 & \(z_0 \oplus z_3\) & \(R_z(-\frac{\pi}{8})\) \\
  \hline 
  0001 & \(z_3\) & \(R_z(\frac{\pi}{8})\) \\
  \hline
@@ -1156,7 +1161,20 @@ The complete circuit can now be implemented by adding the V gate each time a pos
     \caption{The decomposition of the quadruple CNOT gate.} 
     \label{fig:quad_cnot_decomp} 
 \end{figure}
+\newpage
+\section{Conclusion}
+During this project, we were able to find a brute force method for solving the popcount problem for \(j \in \{1, 2, 3\}\). The method covers all output combinations with controlled gates. The key that is utilized by this method is the connection between the binary bit positions and the binomial coefficient which counts the number of activated control gates. When we look at the odd/even pattern for \(\binom{\omega(z_n)}{8}\) follows a similar pattern with 8 consecutive odd numbers and even numbers. As a result we end up with the hypothesis that the brute force method generalizes to \(j \ge 1\) where the number of control qubits are given by \(2^{j-1}\). The general expression for the brute force method can, with this assumption, be expressed like this:
 
+\[\ket{z_n, y_2} \xrightarrow{ET} 
+    \begin{cases}
+    \ket{z_n, 0} & 2^{j-1} > \omega(z_n) \ge 0 \\
+    \ket{z_n} \otimes X^{\binom{\omega(z_n)}{2^{j-1}}}\ket{0} & \omega(z_n) \ge 2^{j-1}
+    \end{cases}
+\]
+
+Future work would be to prove that the connection between the bit values of a binary and the binomial coefficient occurs for any bit position.
+
+We were also able to show that the Quantum Fourier Transform can be used to solve the \(j=2\) problem instance with considerably less gates. This approach is however not feasible for any instances with \(j > 2\) because we would require at least one more qubit for every increase in \(j\).
 
 \newpage
 
@@ -1171,7 +1189,7 @@ The complete circuit can now be implemented by adding the V gate each time a pos
 \subsubsection{Appendix A}
 \label{appendix_a}
 
-For running the simulatin with Qiskit a jupyter notebook was created. In this appendix the exported version of the notebook can be reviewed.
+For running the simulation with Qiskit a jupyter notebook was created. In this appendix the exported version of the notebook can be reviewed.
 The following libraries were imported:
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
@@ -1187,7 +1205,7 @@ The following libraries were imported:
 \end{Verbatim}
 \end{tcolorbox}
 
-    The spesific problem instance is defined:
+    The specific problem instance is defined:
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
 \prompt{In}{incolor}{20}{\boxspacing}
